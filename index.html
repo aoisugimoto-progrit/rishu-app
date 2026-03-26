@@ -145,6 +145,7 @@
         .modal-content h2 {
             margin-bottom: 15px;
             color: #333;
+            font-size: 18px;
         }
 
         .modal-content input {
@@ -156,9 +157,51 @@
             font-size: 16px;
         }
 
+        .class-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .class-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .class-checkbox:hover {
+            background: #f5f5f5;
+        }
+
+        .class-checkbox input {
+            margin-right: 10px;
+            width: auto;
+        }
+
+        .class-checkbox label {
+            cursor: pointer;
+            font-size: 14px;
+        }
+
         .modal-buttons {
             display: flex;
             gap: 10px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
         }
 
         .output-area {
@@ -263,10 +306,11 @@
 
     <div id="modal" class="modal">
         <div class="modal-content">
-            <h2>授業名を入力</h2>
-            <input type="text" id="classInput" placeholder="例: 経済学入門" />
+            <h2 id="modalTitle">授業を選択</h2>
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 検索..." />
+            <div id="classList" class="class-list"></div>
             <div class="modal-buttons">
-                <button class="btn btn-primary" onclick="addClass()">追加</button>
+                <button class="btn btn-primary" onclick="addSelectedClasses()">追加</button>
                 <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
             </div>
         </div>
@@ -276,6 +320,207 @@
         let schedule = Array(5).fill().map(() => Array(5).fill().map(() => []));
         let currentPeriod = 0;
         let currentDay = 0;
+
+        // 授業データ（PDFより）
+        const classData = [
+            [ // 月曜
+                [ // 1限
+                    "国際経営Ⅱ（大木）",
+                    "現代日本経済史Ⅰ（小島）",
+                    "財政Ⅱ（林）",
+                    "上級西洋経済史Ⅰ（石原）",
+                    "日本政治（境家）",
+                    "Political Economics（WEESE・渡辺）",
+                    "保険数理Ⅱ（岩沢）"
+                ],
+                [ // 2限
+                    "商法（１）（飯田）",
+                    "金融Ⅰ（藤原）",
+                    "行政法（北島）",
+                    "アクチュアリーワークショップⅠ（岩沢）",
+                    "保険数理Ⅰ（森本）",
+                    "上級労働経済学（川田）",
+                    "民法（２）（森田）",
+                    "上級デリバティブ演習Ⅰ（藤井）",
+                    "Economic Analysis of Pandemics（岩本・仲田）",
+                    "上級日本経済史Ⅰ（小島）",
+                    "上級アジア経済史（小林）"
+                ],
+                [ // 3限
+                    "ICTマネジメントⅠ（朴）",
+                    "経営管理Ⅰ（舟津）",
+                    "グローバル・ベンチャリングⅡ（中野）",
+                    "次世代企業価値デザインI（柳川）",
+                    "財務会計Ⅱ（米山）",
+                    "経営分析Ⅱ（首藤）",
+                    "数理統計Ⅱ（川久保）",
+                    "文科系のための線形代数・解析Ⅱ（藤堂）",
+                    "Real Estate Finance and Economics（吉田）",
+                    "上級計量経済学Ⅱ（下津）"
+                ],
+                [ // 4限
+                    "上級開発経済（澤田）",
+                    "商法（２）（加藤）",
+                    "日本政治史（五百籏頭）",
+                    "Institutional Analysis of Japanese Economy Ⅰ（中林）",
+                    "行政法（北島）"
+                ],
+                [ // 5限
+                    "経済学とコンピューターサイエンスI（坂口）",
+                    "金融機関のリスク管理（池森）",
+                    "日本政治（境家）",
+                    "デリバティブ（藤井）",
+                    "ファイナンスのための確率Ⅰ（森本）",
+                    "エネルギー市場/コモディティ市場（石崎・山岡）",
+                    "インベストメント（山内）",
+                    "数理手法Ⅳ（荻原）",
+                    "Data Science for Public Policy（BAIRD）",
+                    "経済統計（肥後）",
+                    "金融制度の企画と運用（澤田）",
+                    "財政金融と政策形成（服部）",
+                    "民法（２）（森田）",
+                    "商法（１）（飯田）",
+                    "上級世界経済Ⅰ（丸川）"
+                ]
+            ],
+            [ // 火曜
+                [ // 1限
+                    "国際経営Ⅱ（大木）",
+                    "現代日本経済史Ⅰ（小島）",
+                    "財政Ⅱ（林）",
+                    "生産システムⅡ（辺）",
+                    "上級西洋経済史Ⅰ（石原）",
+                    "Real Estate Finance and Economics（吉田）"
+                ],
+                [ // 2限
+                    "金融・ビジネス・経済政策のためのデータ分析（植田・中野）",
+                    "数量ファイナンスⅠ（竹原）",
+                    "現代日本流通史（藤岡）"
+                ],
+                [ // 3限
+                    "上級ミクロ経済学Ⅰ（尾山）",
+                    "Gender and Politics（高木）",
+                    "Recent Advances in Game Theory（山本）",
+                    "経営財務Ⅰ（山本）",
+                    "上級デリバティブ（中里）",
+                    "ICTマネジメントⅠ（朴）",
+                    "経営管理Ⅰ（舟津）",
+                    "財務会計Ⅱ（米山）",
+                    "経営分析Ⅱ（首藤）",
+                    "文科系のための線形代数・解析Ⅱ（藤堂）",
+                    "上級計量経済学Ⅱ（下津）"
+                ],
+                [ // 4限
+                    "上級開発経済（澤田）",
+                    "日本の未来と個人の役割（宗像）",
+                    "商法（２）（加藤）",
+                    "経済学のための数学（尾山）",
+                    "JIN Bei（SMBC）",
+                    "マクロ経済動学（楡井）",
+                    "日本政治史（五百籏頭）",
+                    "応用統計（大森）"
+                ],
+                [ // 5限 (空欄)
+
+                ]
+            ],
+            [ // 水曜
+                [ // 1限
+                    "国際経営論Ⅱ（大木）",
+                    "現代日本経済史Ⅰ（小島）"
+                ],
+                [ // 2限
+                    "現代日本流通史Ⅰ（藤岡）"
+                ],
+                [ // 3限
+                    "経営学Ⅰ（尾山）",
+                    "エネルギー政策（小山）",
+                    "ICTマネジメントⅠ（朴）",
+                    "エネルギー市場と産業（松本）",
+                    "経営分析Ⅱ（首藤）",
+                    "財政Ⅱ（林）",
+                    "上級産業分析手法Ⅰ（小林）",
+                    "上級国際経済学Ⅰ（若杉）"
+                ],
+                [ // 4限
+                    "日本政治史（境家）",
+                    "イノベーションと企業戦略（山口）",
+                    "金融制度の企画と運用（澤田）",
+                    "数理統計Ⅱ（川久保）",
+                    "実証的金融経済学Ⅰ（祝迫）",
+                    "金融・ビジネス・経済政策のためのデータ分析（植田）"
+                ],
+                [ // 5限
+                    "デリバティブワークショップⅠ（岩沢）",
+                    "実証的金融経済学Ⅰ（祝迫）",
+                    "数理手法Ⅱ（荻原）",
+                    "数理手法Ⅳ（荻原）",
+                    "経営戦略と競争戦略Ⅰ（竹内）"
+                ]
+            ],
+            [ // 木曜
+                [ // 1限
+                    "国際経営Ⅱ（大木）",
+                    "現代日本経済史Ⅰ（小島）",
+                    "財政Ⅱ（林）",
+                    "生産システムⅡ（辺）"
+                ],
+                [ // 2限
+                    "上級国際経済史Ⅱ（岡）",
+                    "Gender and Politics（高木）"
+                ],
+                [ // 3限
+                    "データ科学と実習Ⅱ（星野）",
+                    "上級デリバティブ（中里）",
+                    "上級ゲームの理論（石黒）",
+                    "上級法と経済学（柳川）",
+                    "上級国際経済学Ⅱ（戸堂）",
+                    "上級公共経済Ⅱ（佐藤）"
+                ],
+                [ // 4限
+                    "上級ゲームの理論Ⅱ（石黒）",
+                    "現代日本流通史Ⅰ（藤岡）",
+                    "Recent Advances in Game Theory（山本）",
+                    "経営財務Ⅰ（山本）",
+                    "神取、大森、林、佐藤整、大橋、佐藤泰、田中、小林演習"
+                ],
+                [ // 5限
+                    "データ科学と実習Ⅱ（星野）",
+                    "経済史演習（山本）",
+                    "計量経済学演習（新谷）"
+                ]
+            ],
+            [ // 金曜
+                [ // 1限
+                    "商法（１）（飯田）",
+                    "金融Ⅰ（藤原）",
+                    "上級経済統計分析（肥後）"
+                ],
+                [ // 2限
+                    "ICTマネジメントⅠ（朴）",
+                    "経営管理Ⅱ（寺田）",
+                    "企業価値のデータサイエンスⅠ（岩沢・山内）",
+                    "上級経済発展論Ⅱ（川久保）"
+                ],
+                [ // 3限
+                    "商法（２）（加藤）",
+                    "応用マクロ経済学Ⅰ（松林）",
+                    "マクロ経済と政策Ⅰ（吉川）"
+                ],
+                [ // 4限
+                    "上級ゲームの理論Ⅱ（石黒）",
+                    "上級労働経済Ⅰ（川田）",
+                    "計量経済学Ⅱ（新谷）",
+                    "金融・ビジネス・経済政策のためのデータ分析（植田）",
+                    "粕谷、澤田康、楡井、下津演習"
+                ],
+                [ // 5限
+                    "金融機関のリスク管理（池森）",
+                    "現代日本流通史Ⅰ（藤岡）",
+                    "経済史研究Ⅱ（山本裕）"
+                ]
+            ]
+        ];
 
         // ローカルストレージから読み込み
         function loadSchedule() {
@@ -295,9 +540,11 @@
         function openModal(period, day) {
             currentPeriod = period;
             currentDay = day;
+            const days = ['月', '火', '水', '木', '金'];
+            document.getElementById('modalTitle').textContent = `${days[day]}曜${period + 1}限の授業を選択`;
             document.getElementById('modal').style.display = 'block';
-            document.getElementById('classInput').value = '';
-            document.getElementById('classInput').focus();
+            document.getElementById('searchInput').value = '';
+            renderClassList();
         }
 
         // モーダルを閉じる
@@ -305,17 +552,41 @@
             document.getElementById('modal').style.display = 'none';
         }
 
-        // 授業を追加
-        function addClass() {
-            const input = document.getElementById('classInput');
-            const className = input.value.trim();
+        // 授業リストを表示
+        function renderClassList(searchTerm = '') {
+            const classList = document.getElementById('classList');
+            const classes = classData[currentDay][currentPeriod];
 
-            if (className) {
-                schedule[currentPeriod][currentDay].push(className);
-                saveSchedule();
-                renderSchedule();
-                closeModal();
+            // 検索フィルター
+            const filteredClasses = classes.filter(className =>
+                className.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            if (filteredClasses.length === 0) {
+                classList.innerHTML = '<p style="text-align: center; color: #999;">該当する授業がありません</p>';
+                return;
             }
+
+            classList.innerHTML = filteredClasses.map((className, index) => `
+                <div class="class-checkbox">
+                    <input type="checkbox" id="class-${index}" value="${className}">
+                    <label for="class-${index}">${className}</label>
+                </div>
+            `).join('');
+        }
+
+        // 選択された授業を追加
+        function addSelectedClasses() {
+            const checkboxes = document.querySelectorAll('#classList input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                const className = checkbox.value;
+                if (!schedule[currentPeriod][currentDay].includes(className)) {
+                    schedule[currentPeriod][currentDay].push(className);
+                }
+            });
+            saveSchedule();
+            renderSchedule();
+            closeModal();
         }
 
         // 授業を削除
@@ -371,11 +642,9 @@
             }
         }
 
-        // Enterキーで追加
-        document.getElementById('classInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addClass();
-            }
+        // 検索機能
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            renderClassList(e.target.value);
         });
 
         // モーダルの外側をクリックで閉じる
