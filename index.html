@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>履修登録アプリ</title>
+    <title>履修登録アプリ（2026年度S1/S2）</title>
     <style>
         * {
             margin: 0;
@@ -18,7 +18,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
@@ -29,8 +29,40 @@
         h1 {
             text-align: center;
             color: #FF6600;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             font-size: 24px;
+        }
+
+        .term-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .term-btn {
+            padding: 10px 30px;
+            border: 2px solid #FF6600;
+            background: white;
+            color: #FF6600;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .term-btn.active {
+            background: #FF6600;
+            color: white;
+        }
+
+        .term-btn:hover {
+            background: #ffe6d5;
+        }
+
+        .term-btn.active:hover {
+            background: #e55a00;
         }
 
         .controls {
@@ -72,11 +104,12 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            font-size: 13px;
         }
 
         th, td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
         }
 
@@ -84,13 +117,14 @@
             background: #FF6600;
             color: white;
             font-weight: bold;
+            font-size: 12px;
         }
 
         td {
             vertical-align: top;
             cursor: pointer;
             transition: background 0.2s;
-            min-height: 80px;
+            min-height: 60px;
             position: relative;
         }
 
@@ -100,10 +134,10 @@
 
         .class-item {
             background: #f0f0f0;
-            padding: 5px;
-            margin: 3px 0;
+            padding: 4px;
+            margin: 2px 0;
             border-radius: 3px;
-            font-size: 13px;
+            font-size: 11px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -114,9 +148,9 @@
             color: white;
             border: none;
             border-radius: 3px;
-            padding: 2px 6px;
+            padding: 2px 5px;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 10px;
         }
 
         .modal {
@@ -138,7 +172,10 @@
             background: white;
             padding: 30px;
             border-radius: 10px;
-            min-width: 300px;
+            min-width: 400px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
 
@@ -217,7 +254,7 @@
         }
 
         @media print {
-            .controls, .btn {
+            .controls, .btn, .term-tabs {
                 display: none;
             }
             .container {
@@ -227,18 +264,23 @@
 
         @media (max-width: 600px) {
             th, td {
-                padding: 5px;
-                font-size: 12px;
+                padding: 4px;
+                font-size: 10px;
             }
             .class-item {
-                font-size: 11px;
+                font-size: 9px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📚 履修登録アプリ</h1>
+        <h1>📚 履修登録アプリ（2026年度）</h1>
+
+        <div class="term-tabs">
+            <button class="term-btn active" onclick="switchTerm('S1')">S1ターム<br><small>(4/6～5/27)</small></button>
+            <button class="term-btn" onclick="switchTerm('S2')">S2ターム<br><small>(6/4～7/23)</small></button>
+        </div>
 
         <div class="controls">
             <button class="btn btn-primary" onclick="showOutput()">📄 出力</button>
@@ -259,7 +301,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <th>1限</th>
+                    <th>1限<br><small>8:30-10:15</small></th>
                     <td onclick="openModal(0, 0)"><div id="cell-0-0"></div></td>
                     <td onclick="openModal(0, 1)"><div id="cell-0-1"></div></td>
                     <td onclick="openModal(0, 2)"><div id="cell-0-2"></div></td>
@@ -267,7 +309,7 @@
                     <td onclick="openModal(0, 4)"><div id="cell-0-4"></div></td>
                 </tr>
                 <tr>
-                    <th>2限</th>
+                    <th>2限<br><small>10:25-12:10</small></th>
                     <td onclick="openModal(1, 0)"><div id="cell-1-0"></div></td>
                     <td onclick="openModal(1, 1)"><div id="cell-1-1"></div></td>
                     <td onclick="openModal(1, 2)"><div id="cell-1-2"></div></td>
@@ -275,7 +317,7 @@
                     <td onclick="openModal(1, 4)"><div id="cell-1-4"></div></td>
                 </tr>
                 <tr>
-                    <th>3限</th>
+                    <th>3限<br><small>13:00-14:45</small></th>
                     <td onclick="openModal(2, 0)"><div id="cell-2-0"></div></td>
                     <td onclick="openModal(2, 1)"><div id="cell-2-1"></div></td>
                     <td onclick="openModal(2, 2)"><div id="cell-2-2"></div></td>
@@ -283,7 +325,7 @@
                     <td onclick="openModal(2, 4)"><div id="cell-2-4"></div></td>
                 </tr>
                 <tr>
-                    <th>4限</th>
+                    <th>4限<br><small>14:55-16:40</small></th>
                     <td onclick="openModal(3, 0)"><div id="cell-3-0"></div></td>
                     <td onclick="openModal(3, 1)"><div id="cell-3-1"></div></td>
                     <td onclick="openModal(3, 2)"><div id="cell-3-2"></div></td>
@@ -291,12 +333,20 @@
                     <td onclick="openModal(3, 4)"><div id="cell-3-4"></div></td>
                 </tr>
                 <tr>
-                    <th>5限</th>
+                    <th>5限<br><small>16:50-18:35</small></th>
                     <td onclick="openModal(4, 0)"><div id="cell-4-0"></div></td>
                     <td onclick="openModal(4, 1)"><div id="cell-4-1"></div></td>
                     <td onclick="openModal(4, 2)"><div id="cell-4-2"></div></td>
                     <td onclick="openModal(4, 3)"><div id="cell-4-3"></div></td>
                     <td onclick="openModal(4, 4)"><div id="cell-4-4"></div></td>
+                </tr>
+                <tr>
+                    <th>6限<br><small>18:45-20:30</small></th>
+                    <td onclick="openModal(5, 0)"><div id="cell-5-0"></div></td>
+                    <td onclick="openModal(5, 1)"><div id="cell-5-1"></div></td>
+                    <td onclick="openModal(5, 2)"><div id="cell-5-2"></div></td>
+                    <td onclick="openModal(5, 3)"><div id="cell-5-3"></div></td>
+                    <td onclick="openModal(5, 4)"><div id="cell-5-4"></div></td>
                 </tr>
             </tbody>
         </table>
@@ -317,24 +367,26 @@
     </div>
 
     <script>
-        let schedule = Array(5).fill().map(() => Array(5).fill().map(() => []));
+        let currentTerm = 'S1';
+        let schedule = {
+            S1: Array(6).fill().map(() => Array(5).fill().map(() => [])),
+            S2: Array(6).fill().map(() => Array(5).fill().map(() => []))
+        };
         let currentPeriod = 0;
         let currentDay = 0;
 
-        // 授業データ（PDFより）
-        const classData = [
+        // S1ターム授業データ（4/6～5/27）
+        const classDataS1 = [
             [ // 月曜
                 [ // 1限
-                    "国際経営Ⅱ（大木）",
-                    "現代日本経済史Ⅰ（小島）",
-                    "財政Ⅱ（林）",
-                    "上級西洋経済史Ⅰ（石原）",
-                    "日本政治（境家）",
-                    "Political Economics（WEESE・渡辺）",
-                    "保険数理Ⅱ（岩沢）"
+                    "開発経済Ⅰ（澤田（康））",
+                    "ゲーム理論（粟屋）",
+                    "マーケティングⅠ（田中（洋））",
+                    "国際経営Ⅰ（大木）",
+                    "近代日本経済史Ⅰ（今泉）"
                 ],
                 [ // 2限
-                    "商法（１）（飯田）",
+                    "商法（１）（飯田（秀））",
                     "金融Ⅰ（藤原）",
                     "行政法（北島）",
                     "アクチュアリーワークショップⅠ（岩沢）",
@@ -343,24 +395,20 @@
                     "民法（２）（森田）",
                     "上級デリバティブ演習Ⅰ（藤井）",
                     "Economic Analysis of Pandemics（岩本・仲田）",
-                    "上級日本経済史Ⅰ（小島）",
+                    "上級日本経済史Ⅰ（小島（庸））",
                     "上級アジア経済史（小林）"
                 ],
                 [ // 3限
-                    "ICTマネジメントⅠ（朴）",
-                    "経営管理Ⅰ（舟津）",
-                    "グローバル・ベンチャリングⅡ（中野）",
-                    "次世代企業価値デザインI（柳川）",
-                    "財務会計Ⅱ（米山）",
-                    "経営分析Ⅱ（首藤）",
-                    "数理統計Ⅱ（川久保）",
-                    "文科系のための線形代数・解析Ⅱ（藤堂）",
-                    "Real Estate Finance and Economics（吉田）",
-                    "上級計量経済学Ⅱ（下津）"
+                    "財務会計Ⅰ（米山）",
+                    "経済史Ⅱ（佐々木）",
+                    "グローバル・ベンチャリングⅠ（中野（剛治））",
+                    "文科系のための線形代数・解析Ⅰ（藤堂・寒野・佐藤（一））",
+                    "経営分析Ⅰ（管理会計Ⅰ）（首藤）",
+                    "数理統計Ⅰ（川久保）",
+                    "上級計量経済学Ⅰ（下津）"
                 ],
                 [ // 4限
-                    "上級開発経済（澤田）",
-                    "商法（２）（加藤）",
+                    "商法（２）（加藤（貴））",
                     "日本政治史（五百籏頭）",
                     "Institutional Analysis of Japanese Economy Ⅰ（中林）",
                     "行政法（北島）"
@@ -376,58 +424,228 @@
                     "数理手法Ⅳ（荻原）",
                     "Data Science for Public Policy（BAIRD）",
                     "経済統計（肥後）",
-                    "金融制度の企画と運用（澤田）",
+                    "金融制度の企画と運用（澤田（恒））",
                     "財政金融と政策形成（服部）",
                     "民法（２）（森田）",
-                    "商法（１）（飯田）",
-                    "上級世界経済Ⅰ（丸川）"
-                ]
+                    "商法（１）（飯田（秀））",
+                    "上級世界経済Ⅰ（丸川・伊藤・小野塚）"
+                ],
+                [] // 6限
             ],
             [ // 火曜
                 [ // 1限
-                    "国際経営Ⅱ（大木）",
-                    "現代日本経済史Ⅰ（小島）",
-                    "財政Ⅱ（林）",
-                    "生産システムⅡ（辺）",
-                    "上級西洋経済史Ⅰ（石原）",
-                    "Real Estate Finance and Economics（吉田）"
+                    "開発経済Ⅰ（澤田（康））",
+                    "ゲーム理論（粟屋）",
+                    "国際経営Ⅰ（大木）",
+                    "近代日本経済史Ⅰ（今泉）"
                 ],
                 [ // 2限
-                    "金融・ビジネス・経済政策のためのデータ分析（植田・中野）",
+                    "金融・ビジネス・経済政策のためのデータ分析（植田・中野（剛））",
                     "数量ファイナンスⅠ（竹原）",
                     "現代日本流通史（藤岡）"
                 ],
                 [ // 3限
                     "上級ミクロ経済学Ⅰ（尾山）",
                     "Gender and Politics（高木）",
-                    "Recent Advances in Game Theory（山本）",
-                    "経営財務Ⅰ（山本）",
+                    "Recent Advances in Game Theory（山本（裕））",
+                    "経営財務Ⅰ（山本（功））",
                     "上級デリバティブ（中里）",
-                    "ICTマネジメントⅠ（朴）",
-                    "経営管理Ⅰ（舟津）",
-                    "財務会計Ⅱ（米山）",
-                    "経営分析Ⅱ（首藤）",
-                    "文科系のための線形代数・解析Ⅱ（藤堂）",
-                    "上級計量経済学Ⅱ（下津）"
+                    "財政Ⅰ（菊池）",
+                    "経済史Ⅱ（佐々木）",
+                    "社会保障（宮里）",
+                    "財務会計Ⅰ（米山）",
+                    "経営分析Ⅰ（管理会計Ⅰ）（首藤）",
+                    "上級計量経済学Ⅰ（下津）",
+                    "文科系のための線形代数・解析Ⅰ（藤堂・寒野・佐藤（一））"
                 ],
                 [ // 4限
-                    "上級開発経済（澤田）",
-                    "日本の未来と個人の役割（宗像）",
-                    "商法（２）（加藤）",
+                    "日本の未来と個人の役割（宗像・西田・島田）",
+                    "商法（２）（加藤（貴））",
                     "経済学のための数学（尾山）",
                     "JIN Bei（SMBC）",
                     "マクロ経済動学（楡井）",
                     "日本政治史（五百籏頭）",
                     "応用統計（大森）"
                 ],
-                [ // 5限 (空欄)
+                [], // 5限
+                [] // 6限
+            ],
+            [ // 水曜
+                [], // 1限
+                [], // 2限
+                [ // 3限
+                    "金融市場と公共政策（坂口）",
+                    "マーケティングⅠ（管理会計Ⅰ）（首藤）",
+                    "エネルギーと公共政策（土井・中嶋）",
+                    "Data Science（BAIRD）"
+                ],
+                [ // 4限
+                    "金融市場と公共政策（MIZOKUCHI）",
+                    "エネルギーと公共政策（土井・中嶋）",
+                    "エコノミクス・オブ・ブランディング（高木）",
+                    "経済政策Ⅰ（栗林）",
+                    "民法（２）（森田）",
+                    "商法（１）（飯田（秀））",
+                    "上級経済発展論Ⅰ（川久保・小島武・川合）"
+                ],
+                [], // 5限
+                [] // 6限
+            ],
+            [ // 木曜
+                [ // 1限
+                    "開発経済Ⅰ（澤田（康））",
+                    "国際経営Ⅰ（大木）"
+                ],
+                [ // 2限
+                    "上級近代日本経済史Ⅰ（岡山）"
+                ],
+                [ // 3限
+                    "現代日本流通史（藤岡）",
+                    "Gender and Politics（高木）"
+                ],
+                [ // 4限
+                    "金融市場と公共政策（土井・川合）",
+                    "国際ファイナンスⅠ（仲田）"
+                ],
+                [ // 5限
+                    "財政Ⅱ（林（正））"
+                ],
+                [] // 6限
+            ],
+            [ // 金曜
+                [ // 1限
+                    "財政Ⅰ（菊池）",
+                    "社会保障（宮里）"
+                ],
+                [ // 2限
+                    "商法（２）（加藤（貴））",
+                    "マクロ経済成長Ⅰ（宮嵜）",
+                    "応用技術（大森）"
+                ],
+                [ // 3限
+                    "財務会計Ⅰ（米山）",
+                    "経済・経営統計Ⅰ（首藤）",
+                    "社会保障（宮里）",
+                    "文科系のための線形代数・解析Ⅰ（藤堂・寒野・佐藤（一））"
+                ],
+                [ // 4限
+                    "日本・アジア経済史講座（諸田・植田）"
+                ],
+                [], // 5限
+                [] // 6限
+            ]
+        ];
 
+        // S2ターム授業データ（6/4～7/23）
+        const classDataS2 = [
+            [ // 月曜
+                [ // 1限
+                    "国際経営Ⅱ（大木）",
+                    "現代日本経済史Ⅰ（小島（庸））",
+                    "財政Ⅱ（林（正））",
+                    "上級西洋経済史Ⅰ（石原）",
+                    "日本政治（境家）",
+                    "Political Economics（WEESE・渡辺）",
+                    "保険数理Ⅱ（岩沢）"
+                ],
+                [ // 2限
+                    "商法（１）（飯田（秀））",
+                    "金融Ⅰ（藤原）",
+                    "行政法（北島）",
+                    "アクチュアリーワークショップⅠ（岩沢）",
+                    "保険数理Ⅰ（森本）",
+                    "上級労働経済学（川田）",
+                    "民法（２）（森田）",
+                    "上級デリバティブ演習Ⅰ（藤井）",
+                    "Economic Analysis of Pandemics（岩本・仲田）",
+                    "上級日本経済史Ⅰ（小島（庸））",
+                    "上級アジア経済史（小林）"
+                ],
+                [ // 3限
+                    "ICTマネジメントⅠ（朴）",
+                    "経営管理Ⅰ（舟津）",
+                    "グローバル・ベンチャリングⅡ（中野（剛治））",
+                    "次世代企業価値デザインI（柳川）",
+                    "財務会計Ⅱ（米山）",
+                    "経営分析Ⅱ（首藤）",
+                    "数理統計Ⅱ（川久保）",
+                    "文科系のための線形代数・解析Ⅱ（藤堂・寒野・佐藤（一））",
+                    "Real Estate Finance and Economics（吉田）",
+                    "上級計量経済学Ⅱ（下津・新谷・坂口）"
+                ],
+                [ // 4限
+                    "上級開発経済（澤田（康））",
+                    "商法（２）（加藤（貴））",
+                    "日本政治史（五百籏頭）",
+                    "Institutional Analysis of Japanese Economy Ⅰ（中林）",
+                    "行政法（北島）"
+                ],
+                [ // 5限
+                    "経済学とコンピューターサイエンスI（坂口）",
+                    "金融機関のリスク管理（池森）",
+                    "日本政治（境家）",
+                    "デリバティブ（藤井）",
+                    "ファイナンスのための確率Ⅰ（森本）",
+                    "エネルギー市場/コモディティ市場（石崎・山岡）",
+                    "インベストメント（山内）",
+                    "数理手法Ⅳ（荻原）",
+                    "Data Science for Public Policy（BAIRD）",
+                    "経済統計（肥後）",
+                    "金融制度の企画と運用（澤田（恒））",
+                    "財政金融と政策形成（服部）",
+                    "民法（２）（森田）",
+                    "商法（１）（飯田（秀））",
+                    "上級世界経済Ⅰ（丸川・伊藤・小野塚）"
+                ],
+                [ // 6限
+                    "エネルギー政策（小山）",
+                    "データサイエンス・統計Ⅰ（星野（崇））"
                 ]
+            ],
+            [ // 火曜
+                [ // 1限
+                    "国際経営Ⅱ（大木）",
+                    "現代日本経済史Ⅰ（小島（庸））",
+                    "財政Ⅱ（林（正））",
+                    "生産システムⅡ（辺）",
+                    "上級西洋経済史Ⅰ（石原）",
+                    "Real Estate Finance and Economics（吉田）"
+                ],
+                [ // 2限
+                    "金融・ビジネス・経済政策のためのデータ分析（植田・中野（剛））",
+                    "数量ファイナンスⅠ（竹原）",
+                    "現代日本流通史（藤岡）"
+                ],
+                [ // 3限
+                    "上級ミクロ経済学Ⅰ（尾山）",
+                    "Gender and Politics（高木）",
+                    "Recent Advances in Game Theory（山本（裕））",
+                    "経営財務Ⅰ（山本（功））",
+                    "上級デリバティブ（中里）",
+                    "ICTマネジメントⅠ（朴）",
+                    "経営管理Ⅰ（舟津）",
+                    "財務会計Ⅱ（米山）",
+                    "経営分析Ⅱ（首藤）",
+                    "文科系のための線形代数・解析Ⅱ（藤堂・寒野・佐藤（一））",
+                    "上級計量経済学Ⅱ（下津・新谷・坂口）"
+                ],
+                [ // 4限
+                    "上級開発経済（澤田（康））",
+                    "日本の未来と個人の役割（宗像・西田・島田）",
+                    "商法（２）（加藤（貴））",
+                    "経済学のための数学（尾山）",
+                    "JIN Bei（SMBC）",
+                    "マクロ経済動学（楡井）",
+                    "日本政治史（五百籏頭）",
+                    "応用統計（大森）"
+                ],
+                [], // 5限
+                [] // 6限
             ],
             [ // 水曜
                 [ // 1限
                     "国際経営論Ⅱ（大木）",
-                    "現代日本経済史Ⅰ（小島）"
+                    "現代日本経済史Ⅰ（小島（庸））"
                 ],
                 [ // 2限
                     "現代日本流通史Ⅰ（藤岡）"
@@ -438,7 +656,7 @@
                     "ICTマネジメントⅠ（朴）",
                     "エネルギー市場と産業（松本）",
                     "経営分析Ⅱ（首藤）",
-                    "財政Ⅱ（林）",
+                    "財政Ⅱ（林（正））",
                     "上級産業分析手法Ⅰ（小林）",
                     "上級国際経済学Ⅰ（若杉）"
                 ],
@@ -456,13 +674,14 @@
                     "数理手法Ⅱ（荻原）",
                     "数理手法Ⅳ（荻原）",
                     "経営戦略と競争戦略Ⅰ（竹内）"
-                ]
+                ],
+                [] // 6限
             ],
             [ // 木曜
                 [ // 1限
                     "国際経営Ⅱ（大木）",
-                    "現代日本経済史Ⅰ（小島）",
-                    "財政Ⅱ（林）",
+                    "現代日本経済史Ⅰ（小島（庸））",
+                    "財政Ⅱ（林（正））",
                     "生産システムⅡ（辺）"
                 ],
                 [ // 2限
@@ -480,15 +699,15 @@
                 [ // 4限
                     "上級ゲームの理論Ⅱ（石黒）",
                     "現代日本流通史Ⅰ（藤岡）",
-                    "Recent Advances in Game Theory（山本）",
-                    "経営財務Ⅰ（山本）",
-                    "神取、大森、林、佐藤整、大橋、佐藤泰、田中、小林演習"
+                    "Recent Advances in Game Theory（山本（裕））",
+                    "経営財務Ⅰ（山本（功））"
                 ],
                 [ // 5限
                     "データ科学と実習Ⅱ（星野）",
                     "経済史演習（山本）",
                     "計量経済学演習（新谷）"
-                ]
+                ],
+                [] // 6限
             ],
             [ // 金曜
                 [ // 1限
@@ -511,16 +730,30 @@
                     "上級ゲームの理論Ⅱ（石黒）",
                     "上級労働経済Ⅰ（川田）",
                     "計量経済学Ⅱ（新谷）",
-                    "金融・ビジネス・経済政策のためのデータ分析（植田）",
-                    "粕谷、澤田康、楡井、下津演習"
+                    "金融・ビジネス・経済政策のためのデータ分析（植田）"
                 ],
                 [ // 5限
                     "金融機関のリスク管理（池森）",
                     "現代日本流通史Ⅰ（藤岡）",
                     "経済史研究Ⅱ（山本裕）"
-                ]
+                ],
+                [] // 6限
             ]
         ];
+
+        // ターム切り替え
+        function switchTerm(term) {
+            currentTerm = term;
+            const buttons = document.querySelectorAll('.term-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes(term)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            renderSchedule();
+        }
 
         // ローカルストレージから読み込み
         function loadSchedule() {
@@ -541,7 +774,8 @@
             currentPeriod = period;
             currentDay = day;
             const days = ['月', '火', '水', '木', '金'];
-            document.getElementById('modalTitle').textContent = `${days[day]}曜${period + 1}限の授業を選択`;
+            const times = ['1限(8:30-10:15)', '2限(10:25-12:10)', '3限(13:00-14:45)', '4限(14:55-16:40)', '5限(16:50-18:35)', '6限(18:45-20:30)'];
+            document.getElementById('modalTitle').textContent = `${currentTerm}ターム ${days[day]}曜 ${times[period]} の授業を選択`;
             document.getElementById('modal').style.display = 'block';
             document.getElementById('searchInput').value = '';
             renderClassList();
@@ -555,6 +789,7 @@
         // 授業リストを表示
         function renderClassList(searchTerm = '') {
             const classList = document.getElementById('classList');
+            const classData = currentTerm === 'S1' ? classDataS1 : classDataS2;
             const classes = classData[currentDay][currentPeriod];
 
             // 検索フィルター
@@ -580,8 +815,8 @@
             const checkboxes = document.querySelectorAll('#classList input[type="checkbox"]:checked');
             checkboxes.forEach(checkbox => {
                 const className = checkbox.value;
-                if (!schedule[currentPeriod][currentDay].includes(className)) {
-                    schedule[currentPeriod][currentDay].push(className);
+                if (!schedule[currentTerm][currentPeriod][currentDay].includes(className)) {
+                    schedule[currentTerm][currentPeriod][currentDay].push(className);
                 }
             });
             saveSchedule();
@@ -591,17 +826,17 @@
 
         // 授業を削除
         function deleteClass(period, day, index) {
-            schedule[period][day].splice(index, 1);
+            schedule[currentTerm][period][day].splice(index, 1);
             saveSchedule();
             renderSchedule();
         }
 
         // スケジュールを表示
         function renderSchedule() {
-            for (let period = 0; period < 5; period++) {
+            for (let period = 0; period < 6; period++) {
                 for (let day = 0; day < 5; day++) {
                     const cell = document.getElementById(`cell-${period}-${day}`);
-                    const classes = schedule[period][day];
+                    const classes = schedule[currentTerm][period][day];
 
                     cell.innerHTML = classes.map((className, index) => `
                         <div class="class-item">
@@ -616,13 +851,14 @@
         // 出力を表示
         function showOutput() {
             const days = ['月', '火', '水', '木', '金'];
-            let output = '【履修登録　検討リスト】\n\n';
+            const times = ['1限(8:30-10:15)', '2限(10:25-12:10)', '3限(13:00-14:45)', '4限(14:55-16:40)', '5限(16:50-18:35)', '6限(18:45-20:30)'];
+            let output = `【履修登録　検討リスト】\n【${currentTerm}ターム】\n\n`;
 
-            for (let period = 0; period < 5; period++) {
+            for (let period = 0; period < 6; period++) {
                 for (let day = 0; day < 5; day++) {
-                    const classes = schedule[period][day];
+                    const classes = schedule[currentTerm][period][day];
                     if (classes.length > 0) {
-                        output += `${days[day]}曜${period + 1}限: ${classes.join(' / ')}\n`;
+                        output += `${days[day]}曜 ${times[period]}: ${classes.join(' / ')}\n`;
                     }
                 }
             }
@@ -634,8 +870,8 @@
 
         // 全削除
         function clearAll() {
-            if (confirm('すべての登録を削除しますか？')) {
-                schedule = Array(5).fill().map(() => Array(5).fill().map(() => []));
+            if (confirm(`${currentTerm}タームのすべての登録を削除しますか？`)) {
+                schedule[currentTerm] = Array(6).fill().map(() => Array(5).fill().map(() => []));
                 saveSchedule();
                 renderSchedule();
                 document.getElementById('outputArea').style.display = 'none';
