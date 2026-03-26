@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>履修登録アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Yu Gothic", "游ゴシック", sans-serif;
+            background: #f5f5f5;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #FF6600;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #FF6600;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e55a00;
+        }
+
+        .btn-secondary {
+            background: #666;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #FF6600;
+            color: white;
+            font-weight: bold;
+        }
+
+        td {
+            vertical-align: top;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-height: 80px;
+            position: relative;
+        }
+
+        td:hover {
+            background: #fff3e6;
+        }
+
+        .class-item {
+            background: #f0f0f0;
+            padding: 5px;
+            margin: 3px 0;
+            border-radius: 3px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-btn {
+            background: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            min-width: 300px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .output-area {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        @media print {
+            .controls, .btn {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 5px;
+                font-size: 12px;
+            }
+            .class-item {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 履修登録アプリ</h1>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="showOutput()">📄 出力</button>
+            <button class="btn btn-secondary" onclick="clearAll()">🗑️ 全削除</button>
+            <button class="btn btn-secondary" onclick="window.print()">🖨️ 印刷</button>
+        </div>
+
+        <table id="schedule">
+            <thead>
+                <tr>
+                    <th>時限</th>
+                    <th>月</th>
+                    <th>火</th>
+                    <th>水</th>
+                    <th>木</th>
+                    <th>金</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>1限</th>
+                    <td onclick="openModal(0, 0)"><div id="cell-0-0"></div></td>
+                    <td onclick="openModal(0, 1)"><div id="cell-0-1"></div></td>
+                    <td onclick="openModal(0, 2)"><div id="cell-0-2"></div></td>
+                    <td onclick="openModal(0, 3)"><div id="cell-0-3"></div></td>
+                    <td onclick="openModal(0, 4)"><div id="cell-0-4"></div></td>
+                </tr>
+                <tr>
+                    <th>2限</th>
+                    <td onclick="openModal(1, 0)"><div id="cell-1-0"></div></td>
+                    <td onclick="openModal(1, 1)"><div id="cell-1-1"></div></td>
+                    <td onclick="openModal(1, 2)"><div id="cell-1-2"></div></td>
+                    <td onclick="openModal(1, 3)"><div id="cell-1-3"></div></td>
+                    <td onclick="openModal(1, 4)"><div id="cell-1-4"></div></td>
+                </tr>
+                <tr>
+                    <th>3限</th>
+                    <td onclick="openModal(2, 0)"><div id="cell-2-0"></div></td>
+                    <td onclick="openModal(2, 1)"><div id="cell-2-1"></div></td>
+                    <td onclick="openModal(2, 2)"><div id="cell-2-2"></div></td>
+                    <td onclick="openModal(2, 3)"><div id="cell-2-3"></div></td>
+                    <td onclick="openModal(2, 4)"><div id="cell-2-4"></div></td>
+                </tr>
+                <tr>
+                    <th>4限</th>
+                    <td onclick="openModal(3, 0)"><div id="cell-3-0"></div></td>
+                    <td onclick="openModal(3, 1)"><div id="cell-3-1"></div></td>
+                    <td onclick="openModal(3, 2)"><div id="cell-3-2"></div></td>
+                    <td onclick="openModal(3, 3)"><div id="cell-3-3"></div></td>
+                    <td onclick="openModal(3, 4)"><div id="cell-3-4"></div></td>
+                </tr>
+                <tr>
+                    <th>5限</th>
+                    <td onclick="openModal(4, 0)"><div id="cell-4-0"></div></td>
+                    <td onclick="openModal(4, 1)"><div id="cell-4-1"></div></td>
+                    <td onclick="openModal(4, 2)"><div id="cell-4-2"></div></td>
+                    <td onclick="openModal(4, 3)"><div id="cell-4-3"></div></td>
+                    <td onclick="openModal(4, 4)"><div id="cell-4-4"></div></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="outputArea" class="output-area"></div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>授業名を入力</h2>
+            <input type="text" id="classInput" placeholder="例: 経済学入門" />
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="addClass()">追加</button>
+                <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let schedule = Array(5).fill().map(() => Array(5).fill().map(() => []));
+        let currentPeriod = 0;
+        let currentDay = 0;
+
+        // ローカルストレージから読み込み
+        function loadSchedule() {
+            const saved = localStorage.getItem('schedule');
+            if (saved) {
+                schedule = JSON.parse(saved);
+                renderSchedule();
+            }
+        }
+
+        // ローカルストレージに保存
+        function saveSchedule() {
+            localStorage.setItem('schedule', JSON.stringify(schedule));
+        }
+
+        // モーダルを開く
+        function openModal(period, day) {
+            currentPeriod = period;
+            currentDay = day;
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('classInput').value = '';
+            document.getElementById('classInput').focus();
+        }
+
+        // モーダルを閉じる
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // 授業を追加
+        function addClass() {
+            const input = document.getElementById('classInput');
+            const className = input.value.trim();
+
+            if (className) {
+                schedule[currentPeriod][currentDay].push(className);
+                saveSchedule();
+                renderSchedule();
+                closeModal();
+            }
+        }
+
+        // 授業を削除
+        function deleteClass(period, day, index) {
+            schedule[period][day].splice(index, 1);
+            saveSchedule();
+            renderSchedule();
+        }
+
+        // スケジュールを表示
+        function renderSchedule() {
+            for (let period = 0; period < 5; period++) {
+                for (let day = 0; day < 5; day++) {
+                    const cell = document.getElementById(`cell-${period}-${day}`);
+                    const classes = schedule[period][day];
+
+                    cell.innerHTML = classes.map((className, index) => `
+                        <div class="class-item">
+                            <span>${className}</span>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteClass(${period}, ${day}, ${index})">×</button>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        // 出力を表示
+        function showOutput() {
+            const days = ['月', '火', '水', '木', '金'];
+            let output = '【履修登録　検討リスト】\n\n';
+
+            for (let period = 0; period < 5; period++) {
+                for (let day = 0; day < 5; day++) {
+                    const classes = schedule[period][day];
+                    if (classes.length > 0) {
+                        output += `${days[day]}曜${period + 1}限: ${classes.join(' / ')}\n`;
+                    }
+                }
+            }
+
+            const outputArea = document.getElementById('outputArea');
+            outputArea.textContent = output;
+            outputArea.style.display = 'block';
+        }
+
+        // 全削除
+        function clearAll() {
+            if (confirm('すべての登録を削除しますか？')) {
+                schedule = Array(5).fill().map(() => Array(5).fill().map(() => []));
+                saveSchedule();
+                renderSchedule();
+                document.getElementById('outputArea').style.display = 'none';
+            }
+        }
+
+        // Enterキーで追加
+        document.getElementById('classInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addClass();
+            }
+        });
+
+        // モーダルの外側をクリックで閉じる
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 初期化
+        loadSchedule();
+    </script>
+</body>
+</html>
